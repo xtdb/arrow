@@ -622,12 +622,13 @@ public class DenseUnionVector extends AbstractContainerVector implements FieldVe
     }
 
     private void createTransferPairs() {
-      for (int i = 0; i < nextTypeId; i++) {
+      for (byte i = 0; i < nextTypeId; i++) {
+        byte typeId = typeMapFields[i];
         ValueVector srcVec = internalStruct.getVectorById(i);
         ValueVector dstVec = to.internalStruct.getVectorById(i);
-        to.typeFields[i] = typeFields[i];
+        to.typeFields[typeId] = typeFields[typeId];
         to.typeMapFields[i] = typeMapFields[i];
-        to.childVectors[i] = dstVec;
+        to.childVectors[typeId] = dstVec;
         internalTransferPairs[i] = srcVec.makeTransferPair(dstVec);
       }
     }
@@ -642,13 +643,15 @@ public class DenseUnionVector extends AbstractContainerVector implements FieldVe
       refManager = offsetBuffer.getReferenceManager();
       to.offsetBuffer = refManager.transferOwnership(offsetBuffer, to.allocator).getTransferredBuffer();
 
-      for (int i = 0; i < nextTypeId; i++) {
+      for (byte i = 0; i < nextTypeId; i++) {
+        byte typeId = typeMapFields[i];
         if (internalTransferPairs[i] != null) {
           internalTransferPairs[i].transfer();
-          to.childVectors[i] = internalTransferPairs[i].getTo();
+          to.childVectors[typeId] = internalTransferPairs[i].getTo();
         }
       }
       to.valueCount = valueCount;
+      to.nextTypeId = nextTypeId;
       clear();
     }
 
@@ -668,8 +671,8 @@ public class DenseUnionVector extends AbstractContainerVector implements FieldVe
         to.reallocOffsetBuffer();
       }
 
-      int [] typeCounts = new int[nextTypeId];
-      int [] typeStarts = new int[nextTypeId];
+      int [] typeCounts = new int[Byte.MAX_VALUE + 1];
+      int [] typeStarts = new int[Byte.MAX_VALUE + 1];
       for (int i = 0; i < typeCounts.length; i++) {
         typeCounts[i] = 0;
         typeStarts[i] = -1;
@@ -686,13 +689,15 @@ public class DenseUnionVector extends AbstractContainerVector implements FieldVe
 
       // transfer vector values
       for (int i = 0; i < nextTypeId; i++) {
-        if (typeCounts[i] > 0 && typeStarts[i] != -1) {
-          internalTransferPairs[i].splitAndTransfer(typeStarts[i], typeCounts[i]);
-          to.childVectors[i] = internalTransferPairs[i].getTo();
+        byte typeId = typeMapFields[i];
+        if (typeCounts[typeId] > 0 && typeStarts[typeId] != -1) {
+          internalTransferPairs[i].splitAndTransfer(typeStarts[typeId], typeCounts[typeId]);
+          to.childVectors[typeId] = internalTransferPairs[i].getTo();
         }
       }
 
       to.setValueCount(length);
+      to.nextTypeId = nextTypeId;
     }
 
     @Override
