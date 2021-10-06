@@ -74,7 +74,7 @@ import static org.apache.arrow.vector.types.UnionMode.Dense;
 /*
  * This class is generated using freemarker and the ${.template_name} template.
  */
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "static"})
 
 
 /**
