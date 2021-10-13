@@ -234,9 +234,11 @@ public class DenseUnionVector extends AbstractContainerVector implements FieldVe
               typeFields.length + " relative types. Please use union of union instead");
     }
     byte typeId = nextTypeId;
-    if (this.fieldType != null) {
-      int[] typeIds = ((ArrowType.Union) this.fieldType.getType()).getTypeIds();
-      if (typeIds != null) {
+    if (fieldType != null) {
+      int[] typeIds = ((ArrowType.Union) fieldType.getType()).getTypeIds();
+      // HACK (JH) I'm not sure how this works for cases when you _do_ want a manual typeId mapping
+      // - I suspect some reused type ids :|
+      if (typeIds != null && nextTypeId < typeIds.length) {
         int thisTypeId = typeIds[nextTypeId];
         if (thisTypeId > Byte.MAX_VALUE) {
           throw new IllegalStateException("Dense union vector types must be bytes. " + thisTypeId + " is too large");
