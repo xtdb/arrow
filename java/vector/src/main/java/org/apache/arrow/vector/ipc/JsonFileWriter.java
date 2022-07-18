@@ -122,6 +122,7 @@ public class JsonFileWriter implements AutoCloseable {
   }
 
   /** Constructs a new writer that will output to <code>outputFile</code> with the given options. */
+  @SuppressWarnings("deprecation")
   public JsonFileWriter(File outputFile, JSONWriteConfig config) throws IOException {
     MappingJsonFactory jsonFactory = new MappingJsonFactory();
     this.generator = jsonFactory.createGenerator(outputFile, JsonEncoding.UTF8);
