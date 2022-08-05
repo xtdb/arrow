@@ -418,6 +418,7 @@ public class JsonFileWriter implements AutoCloseable {
         case VARBINARY:
         case LIST:
         case MAP:
+        case DENSEUNION:
           generator.writeNumber(buffer.getInt((long) index * BaseVariableWidthVector.OFFSET_WIDTH));
           break;
         case LARGELIST:
