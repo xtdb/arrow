@@ -45,6 +45,7 @@ import org.apache.arrow.vector.DateMilliVector;
 import org.apache.arrow.vector.Decimal256Vector;
 import org.apache.arrow.vector.DecimalVector;
 import org.apache.arrow.vector.DurationVector;
+import org.apache.arrow.vector.ExtensionTypeVector;
 import org.apache.arrow.vector.FieldVector;
 import org.apache.arrow.vector.FixedSizeBinaryVector;
 import org.apache.arrow.vector.Float4Vector;
@@ -203,6 +204,11 @@ public class JsonFileWriter implements AutoCloseable {
   }
 
   private void writeFromVectorIntoJson(Field field, FieldVector vector) throws IOException {
+    if (vector instanceof ExtensionTypeVector) {
+      writeFromVectorIntoJson(field, ((ExtensionTypeVector<?>) vector).getUnderlyingVector());
+      return;
+    }
+
     TypeLayout typeLayout = TypeLayout.getTypeLayout(field.getType());
     List<BufferType> vectorTypes = typeLayout.getBufferTypes();
     List<ArrowBuf> vectorBuffers = vector.getFieldBuffers();
