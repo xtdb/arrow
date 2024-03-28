@@ -844,10 +844,14 @@ public class UnionVector extends AbstractContainerVector implements FieldVector 
     </#list>
 
     public void setType(int index, MinorType type) {
+      setTypeId(index, (byte) type.ordinal());
+    }
+
+    public void setTypeId(int index, byte typeId) {
       while (index >= getTypeBufferValueCapacity()) {
         reallocTypeBuffer();
       }
-      typeBuffer.setByte(index * TYPE_WIDTH , (byte) type.ordinal());
+      typeBuffer.setByte(index * TYPE_WIDTH , typeId);
     }
 
     private int getTypeBufferValueCapacity() {
