@@ -662,7 +662,8 @@ public class UnionVector extends AbstractContainerVector implements FieldVector 
   }
 
   public ValueVector getVector(int index) {
-    return getVector(index, null);
+    int type = typeBuffer.getByte(index * TYPE_WIDTH);
+    return getVectorByType(type);
   }
 
   public ValueVector getVector(int index, ArrowType arrowType) {
@@ -671,7 +672,7 @@ public class UnionVector extends AbstractContainerVector implements FieldVector 
   }
 
   public ValueVector getVectorByType(int typeId) {
-    return getVectorByType(typeId, null);
+    return internalStruct.getChildByOrdinal(typeId);
   }
 
     public ValueVector getVectorByType(int typeId, ArrowType arrowType) {
