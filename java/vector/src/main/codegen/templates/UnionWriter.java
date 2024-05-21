@@ -183,6 +183,8 @@ public class UnionWriter extends AbstractFieldWriter implements FieldWriter {
       return getListWriter();
     case MAP:
       return getMapWriter(arrowType);
+    case EXTENSIONTYPE:
+      return null;
     <#list vv.types as type>
       <#list type.minor as minor>
         <#assign name = minor.class?cap_first />
